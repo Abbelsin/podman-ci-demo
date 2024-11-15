@@ -12,48 +12,62 @@ on:
             - 'src/**'
             - 'Containerfile'
 jobs:
+    # Stage 1: Build
     build:
         name: Build the Code
         runs-on: ubuntu-latest
-
         steps:
             # Step 1: Checkout the repo
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             
-              # Step 2: Install Podman
+            # Step 2: Install Podman
             - name: Install Podman
               run: |
                 sudo apt-get update
                 sudo apt-get install -y podman
             
-                # Step 3: Verify Podman installation
+            # Step 3: Verify Podman installation
             - name: Check Podman Version
               run: podman --version
             
-              # Step 4: Build the container
+            # Step 4: Build the container
             - name: Build Container
               run: podman build -t podman-ci-demo .
             
-              # Step 5: Test the executable inside the container
+            # Step 5: Test the executable inside the container
             - name: Run Executable
               run: podman run --name ci-container podman-ci-demo
             
-              # Step 6: Extract the executable file as an artifact
+            # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
               if: success()
-              run: podman cp ci-container:/app/hello ./hello
+              run: podman cp ci-container:/app/hello ./executable
 
             # Step 7: Upload artifact to GitHub
             - name: Upload Artifact
               if: success()
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: ./hello
-
+                path: ./executable
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
               if: always()
               # || true is to ensure it doesn't fail if there is no image
               run: podman rm ci-container || true
+
+    # Stage 2: Test the binary
+    test:
+        name: Test the Binary
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            # Step 1: Download the artifact created by the build stage
+            - name: Download artifact
+              uses: actions/download-artifact@v4
+              with:
+                name: hello-executable
+            # Step 2: Run the binary to verify that it returns 0
+            - name: Run the Binary
+              run: ./executable
