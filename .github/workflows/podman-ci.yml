@@ -91,4 +91,4 @@ jobs:
             # Step 2: Run clang-format in check mode
             - name: clang-format
               run: |
-                clang-format -n src/*.c
+                clang-format -n src/*.c || exit 1
