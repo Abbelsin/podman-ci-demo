@@ -43,7 +43,6 @@ jobs:
             # Previous Step 5: Test the executable inside the container
             # - name: Run Executable
             #   run: podman run --name ci-container podman-ci-demo
-
             
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
@@ -77,3 +76,17 @@ jobs:
             # Step 2: Run the binary to verify that it returns 0
             - name: Run the Binary
               run: ./executable
+
+    # Separate stage for code formatting
+    format-check:
+        name: Code Format Check
+        runs-on: ubuntu-latest
+        steps:
+            # Step 1: Checkout the code
+            - name: Checkout code
+              uses: actions/checkout@v4
+            # lets see if clang-format is already installed on ubuntu-latest
+            # Step 2: Run clang-format in check mode
+            - name: clang-format
+              run: |
+                clang-format -n src/*.c
