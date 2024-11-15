@@ -73,6 +73,11 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                 name: hello-executable
+
+            # Step 2: Set executable permissions
+            - name: Make executable
+              run: chmod +x ./executable
+
             # Step 2: Run the binary to verify that it returns 0
             - name: Run the Binary
               run: ./executable
@@ -85,10 +90,9 @@ jobs:
             # Step 1: Checkout the code
             - name: Checkout code
               uses: actions/checkout@v4
-            # lets see if clang-format is already installed on ubuntu-latest
-            - name: Check clang-format installation
-              run: clang-format --version
-            # Step 2: Run clang-format in check mode
-            - name: clang-format
+            # Step 2: Run clang-format check
+            - name: Check Code Formatting
               run: |
-                clang-format -n src/*.c || exit 1
+                clang-format -i src/*.c
+                git diff --exit-code || (echo "Code formatting issues found. Run clang-format to fix." && exit 1)
+          
