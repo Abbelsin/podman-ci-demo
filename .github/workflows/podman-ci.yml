@@ -7,10 +7,12 @@ on:
         paths:
             - 'src/**'
             - 'Containerfile'
+            - '.github/workflows/podman-ci.yml'
     pull_request:
         paths:
             - 'src/**'
             - 'Containerfile'
+            - '.github/workflows/podman-ci.yml'
 jobs:
     # Stage 1: Build
     build:
@@ -35,9 +37,13 @@ jobs:
             - name: Build Container
               run: podman build -t podman-ci-demo .
             
-            # Step 5: Test the executable inside the container
+            # Step 5: Create the container for artifact extraction
+            - name: Create Container for Artifact Extraction
+              run: podman create --name ci-container podman-ci-demo
+            # Previous Step 5: Test the executable inside the container
             # - name: Run Executable
             #   run: podman run --name ci-container podman-ci-demo
+
             
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
