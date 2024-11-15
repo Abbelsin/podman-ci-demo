@@ -11,3 +11,23 @@ on:
         paths:
             - 'src/**'
             - 'Containerfile'
+jobs:
+    build:
+        name: Build the Code
+        runs-on: ubuntu-latest
+
+        steps:
+            # Step 1: Checkout the repo
+            - name: Checkout code
+              uses: actions/checkout@v3
+            # Step 2: Install Podman
+            - name: Install Podman
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y podman
+            # Step 3: Verify Podman installation
+            - name: Check Podman Version
+              run: podman --version
+            # Step 4: Build the container
+            - name: Build Container
+              run: podman build -t podman-ci-demo .
