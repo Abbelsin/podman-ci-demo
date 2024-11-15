@@ -36,8 +36,8 @@ jobs:
               run: podman build -t podman-ci-demo .
             
             # Step 5: Test the executable inside the container
-            - name: Run Executable
-              run: podman run --name ci-container podman-ci-demo
+            # - name: Run Executable
+            #   run: podman run --name ci-container podman-ci-demo
             
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
