@@ -86,6 +86,8 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
             # lets see if clang-format is already installed on ubuntu-latest
+            - name: Check clang-format installation
+              run: clang-format --version
             # Step 2: Run clang-format in check mode
             - name: clang-format
               run: |
