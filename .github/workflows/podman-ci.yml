@@ -31,3 +31,15 @@ jobs:
             # Step 4: Build the container
             - name: Build Container
               run: podman build -t podman-ci-demo .
+            # Step 5: Test the executable inside the container
+            - name: Run Executable
+              run: podman run --name ci-container podman-ci-demo
+            # Step 6: Extract the executable file as an artifact
+            - name: Extract Artifacts
+              if: success()
+              run: podman cp ci-container:/app/hello ./hello
+            # Step 7: Remove Container in case it is running on a self-hosted runner
+            - name: Remove Container
+              if: always()
+              # || true is to ensure it doesn't fail if there is no image
+              run: podman rm ci-container || true
