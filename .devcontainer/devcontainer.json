@@ -1,0 +1,27 @@
+{
+    "name": "C++ Dev Environment",
+    "image": "localhost/custom-cpp-dev",
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "false"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "ms-vscode.cpptools-extension-pack"
+            ],
+            "workspaceFolder": "/workspaces"
+        }
+    },
+    "remoteUser": "vscode",
+    "runArgs": [
+        "--userns=keep-id:uid=1000,gid=1000"
+    ],
+    "containerUser": "vscode",
+    "updateRemoteUserUID": true
+}

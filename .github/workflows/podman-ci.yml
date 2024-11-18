@@ -13,6 +13,7 @@ on:
             - 'src/**'
             - 'Containerfile'
             - '.github/workflows/podman-ci.yml'
+
 jobs:
     # Stage 1: Build
     build:
@@ -37,17 +38,15 @@ jobs:
             - name: Build Container
               run: podman build -t podman-ci-demo .
             
-            # Step 5: Create the container for artifact extraction
-            - name: Create Container for Artifact Extraction
-              run: podman create --name ci-container podman-ci-demo
-            # Previous Step 5: Test the executable inside the container
-            # - name: Run Executable
-            #   run: podman run --name ci-container podman-ci-demo
+            # Step 5: Compile the code inside the container
+            - name: Compile Code in Container
+              run: |
+                podman run --name ci-container podman-ci-demo /bin/bash -c "gcc -o /workspaces/podman-ci-demo/build/hello /workspaces/podman-ci-demo/src/hello.c"
             
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
               if: success()
-              run: podman cp ci-container:/app/hello ./executable
+              run: podman cp ci-container:/workspaces/podman-ci-demo/build/hello ./executable
 
             # Step 7: Upload artifact to GitHub
             - name: Upload Artifact
@@ -56,6 +55,7 @@ jobs:
               with:
                 name: hello-executable
                 path: ./executable
+
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
               if: always()
@@ -78,7 +78,7 @@ jobs:
             - name: Make executable
               run: chmod +x ./executable
 
-            # Step 2: Run the binary to verify that it returns 0
+            # Step 3: Run the binary to verify that it returns 0
             - name: Run the Binary
               run: ./executable
 
