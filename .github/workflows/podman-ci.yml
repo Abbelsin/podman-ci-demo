@@ -36,7 +36,9 @@ jobs:
             
             # Step 4: Build the container
             - name: Build Container
-              run: podman build -f .devcontainer/Dockerfile -t cpp-devcontainer .
+              run: | 
+                cd .devcontainer
+                podman build -f Dockerfile -t cpp-devcontainer .
             
             # Step 4: Run the Container to Build Executable
             - name: Create and Run Container
