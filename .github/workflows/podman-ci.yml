@@ -1,4 +1,4 @@
-name: Podman CI Demo
+name: C++ Devcontainer CI
 
 on:
     push:
@@ -6,12 +6,12 @@ on:
             - main
         paths:
             - 'src/**'
-            - 'Containerfile'
+            - '.devcontainer/**'
             - '.github/workflows/podman-ci.yml'
     pull_request:
         paths:
             - 'src/**'
-            - 'Containerfile'
+            - '.devcontainer/**'
             - '.github/workflows/podman-ci.yml'
 jobs:
     # Stage 1: Build
@@ -35,27 +35,28 @@ jobs:
             
             # Step 4: Build the container
             - name: Build Container
-              run: podman build -t podman-ci-demo .
+              run: podman build -f .devcontainer/Dockerfile -t cpp-devcontainer .
             
-            # Step 5: Create the container for artifact extraction
-            - name: Create Container for Artifact Extraction
-              run: podman create --name ci-container podman-ci-demo
-            # Previous Step 5: Test the executable inside the container
-            # - name: Run Executable
-            #   run: podman run --name ci-container podman-ci-demo
+            # Step 4: Run the Container to Build Executable
+            - name: Create and Run Container
+              run: |
+                podman create --name cpp-ci-container cpp-devcontainer /bin/bash -c "
+                g++ -o /workspaces/main ./src/main.cpp"
+                podman start cpp-ci-container --attach
             
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
               if: success()
-              run: podman cp ci-container:/app/hello ./executable
+              run: podman cp cpp-ci-container:/workspaces/main ./main
 
             # Step 7: Upload artifact to GitHub
-            - name: Upload Artifact
+            - name: Upload Executable
               if: success()
               uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: ./executable
+                path: ./main
+            
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
               if: always()
@@ -76,11 +77,11 @@ jobs:
 
             # Step 2: Set executable permissions
             - name: Make executable
-              run: chmod +x ./executable
+              run: chmod +x ./main
 
             # Step 2: Run the binary to verify that it returns 0
             - name: Run the Binary
-              run: ./executable
+              run: ./main
 
     # Separate stage for code formatting
     format-check:
