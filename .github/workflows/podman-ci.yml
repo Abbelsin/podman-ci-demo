@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - main
+            - vscode-dev-container
         paths:
             - 'src/**'
             - '.devcontainer/**'
