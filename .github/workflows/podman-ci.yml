@@ -43,8 +43,11 @@ jobs:
             # Step 4: Run the Container to Build Executable
             - name: Create and Run Container
               run: |
-                podman create --name cpp-ci-container cpp-devcontainer /bin/bash -c "
-                g++ -o /workspaces/main ./src/main.cpp"
+                podman create \
+                  --name cpp-ci-container \
+                  --volume "$(pwd):/workspaces:Z" \
+                  cpp-devcontainer /bin/bash -c "
+                  g++ -o /workspaces/main /workspaces/src/main.cpp"
                 podman start cpp-ci-container --attach
             
             # Step 6: Extract the executable file as an artifact
