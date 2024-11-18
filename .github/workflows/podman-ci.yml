@@ -45,7 +45,7 @@ jobs:
               run: |
                 podman create \
                   --name cpp-ci-container \
-                  --volume "$(pwd):/workspaces/podman-ci-demo:Z" \
+                  --volume "$(pwd)/..:/workspaces/podman-ci-demo:Z" \
                   cpp-devcontainer /bin/bash -c "
                   g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
                 podman start cpp-ci-container --attach
