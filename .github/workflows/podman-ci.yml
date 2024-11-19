@@ -97,7 +97,10 @@ jobs:
             # Step 1: Checkout the code
             - name: Checkout code
               uses: actions/checkout@v4
-            # Step 2: Run clang-format check
+            # Step 2: Ensure script is executable
+            - name: Set script permissions
+              run: chmod +x check-format.sh
+            # Step 3: Run clang-format check
             - name: Run Format Check Script
               run: ./check-format.sh
           
