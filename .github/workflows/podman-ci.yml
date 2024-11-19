@@ -1,19 +1,19 @@
-name: Podman CI Demo
+name: C++ Devcontainer CI
 
 on:
     push:
         branches:
             - main
+            - vscode-dev-container
         paths:
             - 'src/**'
-            - 'Containerfile'
+            - '.devcontainer/**'
             - '.github/workflows/podman-ci.yml'
     pull_request:
         paths:
             - 'src/**'
-            - 'Containerfile'
+            - '.devcontainer/**'
             - '.github/workflows/podman-ci.yml'
-
 jobs:
     # Stage 1: Build
     build:
@@ -36,31 +36,38 @@ jobs:
             
             # Step 4: Build the container
             - name: Build Container
-              run: podman build -t podman-ci-demo .
+              run: | 
+                cd .devcontainer
+                podman build -f Dockerfile -t cpp-devcontainer .
             
-            # Step 5: Compile the code inside the container
-            - name: Compile Code in Container
+            # Step 5: Run the Container to Build Executable
+            - name: Create and Run Container
               run: |
-                podman run --name ci-container podman-ci-demo /bin/bash -c "gcc -o /workspaces/podman-ci-demo/build/hello /workspaces/podman-ci-demo/src/hello.c"
+                podman create \
+                  --name cpp-ci-container \
+                  --volume "/home/runner/work/podman-ci-demo/podman-ci-demo:/workspaces/podman-ci-demo:Z" \
+                  cpp-devcontainer /bin/bash -c "g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
+                podman start cpp-ci-container --attach
             
             # Step 6: Extract the executable file as an artifact
-            - name: Extract Artifacts
-              if: success()
-              run: podman cp ci-container:/workspaces/podman-ci-demo/build/hello ./executable
+            # This is not needed anymore since we mount a volume
+            # - name: Extract Artifacts
+            #   if: success()
+            #   run: podman cp cpp-ci-container:/workspaces/podman-ci-demo/main ./main
 
             # Step 7: Upload artifact to GitHub
-            - name: Upload Artifact
+            - name: Upload Executable
               if: success()
               uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: ./executable
-
+                path: /home/runner/work/podman-ci-demo/podman-ci-demo/main
+            
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
               if: always()
               # || true is to ensure it doesn't fail if there is no image
-              run: podman rm ci-container || true
+              run: podman rm cpp-ci-container || true
 
     # Stage 2: Test the binary
     test:
@@ -76,11 +83,11 @@ jobs:
 
             # Step 2: Set executable permissions
             - name: Make executable
-              run: chmod +x ./executable
+              run: chmod +x ./main
 
-            # Step 3: Run the binary to verify that it returns 0
+            # Step 2: Run the binary to verify that it returns 0
             - name: Run the Binary
-              run: ./executable
+              run: ./main
 
     # Separate stage for code formatting
     format-check:
@@ -90,9 +97,10 @@ jobs:
             # Step 1: Checkout the code
             - name: Checkout code
               uses: actions/checkout@v4
-            # Step 2: Run clang-format check
-            - name: Check Code Formatting
-              run: |
-                clang-format -i src/*.c
-                git diff --exit-code || (echo "Code formatting issues found. Run clang-format to fix." && exit 1)
+            # Step 2: Ensure script is executable
+            - name: Set script permissions
+              run: chmod +x check-format.sh
+            # Step 3: Run clang-format check
+            - name: Run Format Check Script
+              run: ./check-format.sh
           
