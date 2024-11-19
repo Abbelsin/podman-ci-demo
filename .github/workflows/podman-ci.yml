@@ -62,7 +62,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: /workspaces/podman-ci-demo/main
+                path: /home/runner/work/podman-ci-demo/podman-ci-demo/main
             
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
