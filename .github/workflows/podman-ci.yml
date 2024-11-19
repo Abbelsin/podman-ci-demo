@@ -55,6 +55,9 @@ jobs:
             # - name: Extract Artifacts
             #   if: success()
             #   run: podman cp cpp-ci-container:/workspaces/podman-ci-demo/main ./main
+            - name: Debug Executable
+              run: |
+                podman exec cpp-ci-container ls -la /workspaces/podman-ci-demo
 
             # Step 7: Upload artifact to GitHub
             - name: Upload Executable
