@@ -53,7 +53,7 @@ jobs:
             # Step 6: Extract the executable file as an artifact
             - name: Extract Artifacts
               if: success()
-              run: podman cp cpp-ci-container:/workspaces/main ./main
+              run: podman cp cpp-ci-container:/workspaces/podman-ci-demo/main ./main
 
             # Step 7: Upload artifact to GitHub
             - name: Upload Executable
@@ -100,6 +100,8 @@ jobs:
             # Step 2: Run clang-format check
             - name: Check Code Formatting
               run: |
+                pwd
+                ls -a
                 clang-format -i src/*.c
                 git diff --exit-code || (echo "Code formatting issues found. Run clang-format to fix." && exit 1)
           
