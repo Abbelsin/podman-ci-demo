@@ -46,14 +46,14 @@ jobs:
                 podman create \
                   --name cpp-ci-container \
                   --volume "$(pwd)/..:/workspaces/podman-ci-demo:Z" \
-                  cpp-devcontainer /bin/bash -c "
-                  g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
+                  cpp-devcontainer /bin/bash -c "g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
                 podman start cpp-ci-container --attach
             
             # Step 6: Extract the executable file as an artifact
-            - name: Extract Artifacts
-              if: success()
-              run: podman cp cpp-ci-container:/workspaces/podman-ci-demo/main ./main
+            # This is not needed anymore since we mount a volume
+            # - name: Extract Artifacts
+            #   if: success()
+            #   run: podman cp cpp-ci-container:/workspaces/podman-ci-demo/main ./main
 
             # Step 7: Upload artifact to GitHub
             - name: Upload Executable
@@ -61,13 +61,13 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: ./main
+                path: ../main
             
             # Step 8: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
               if: always()
               # || true is to ensure it doesn't fail if there is no image
-              run: podman rm ci-container || true
+              run: podman rm cpp-ci-container || true
 
     # Stage 2: Test the binary
     test:
@@ -102,6 +102,6 @@ jobs:
               run: |
                 pwd
                 ls -a
-                clang-format -i src/*.c
+                clang-format -i src/*.cpp
                 git diff --exit-code || (echo "Code formatting issues found. Run clang-format to fix." && exit 1)
           
