@@ -46,7 +46,7 @@ jobs:
                 podman create \
                   --name cpp-ci-container \
                   --volume "$(pwd)/..:/workspaces/podman-ci-demo:Z" \
-                  cpp-devcontainer /bin/bash -c "g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
+                  cpp-devcontainer /bin/bash -c "ls /workspaces/podman-ci-demo/src"
                 podman start cpp-ci-container --attach
             
             # Step 6: Extract the executable file as an artifact
