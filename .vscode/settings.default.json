@@ -1,0 +1,6 @@
+{
+    "files.eol": "\n",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.generator": "Ninja"
+}

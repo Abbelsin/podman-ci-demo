@@ -1,6 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-    "name": "C++ Dev Environment",
+    "name": "PodmanPurgatory",
     "build": {
         "dockerfile": "Dockerfile"
     },
@@ -13,7 +13,10 @@
             "settings": {},
             "extensions": [
                 "ms-vscode.cpptools-extension-pack",
-                "streetsidesoftware.code-spell-checker"
+                "github.vscode-github-actions",
+                "dangmai.workspace-default-settings",
+                "twxs.cmake",
+                "ms-vscode.cmake-tools"
             ]
         }
     }

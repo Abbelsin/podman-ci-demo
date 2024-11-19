@@ -44,8 +44,8 @@ jobs:
               run: |
                 podman create \
                   --name cpp-ci-container \
-                  --volume "/home/runner/work/podman-ci-demo/podman-ci-demo:/workspaces/podman-ci-demo:Z" \
-                  cpp-devcontainer /bin/bash -c "g++ -o /workspaces/podman-ci-demo/main /workspaces/podman-ci-demo/src/main.cpp"
+                  --volume "/home/runner/work/podman-purgatory/podman-purgatory:/workspaces/podman-purgatory:Z" \
+                  cpp-devcontainer /bin/bash -c "g++ -o /workspaces/podman-purgatory/main /workspaces/podman-purgatory/src/main.cpp"
                 podman start cpp-ci-container --attach
 
             # Step 6: Upload artifact to GitHub
@@ -54,7 +54,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                 name: hello-executable
-                path: /home/runner/work/podman-ci-demo/podman-ci-demo/main
+                path: /home/runner/work/podman-purgatory/podman-purgatory/main
             
             # Step 7: Remove Container in case it is running on a self-hosted runner
             - name: Remove Container
